@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Testimonios de Pacientes</title>
+  <title>Testimonios de Clientes</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -13,6 +13,7 @@
     #testimonios {
       max-width: 800px;
       margin: auto;
+      text-align: left;
     }
     blockquote {
       background: #fff;
@@ -20,7 +21,6 @@
       margin: 1rem 0;
       padding: 1rem;
       border-radius: 5px;
-      text-align: left;
     }
     blockquote p {
       margin: 0;
@@ -37,27 +37,24 @@
   <h1>Testimonios</h1>
   <div id="testimonios">Cargando testimonios...</div>
 
+  <!-- PapaParse CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+
   <script>
-    fetch("https://script.google.com/macros/s/AKfycbwfzU27FxLSwdo4-Xc_GnfFBw5b6iTpmVXzGf2kPvMo_Vk7hy2TSQGJSbDvR2hbUJNo/exec")
-      .then(res => res.json())
-      .then(data => {
-        const cont = document.getElementById("testimonios");
-        cont.innerHTML = "";
+    const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT5cPDMOYBS3pfs1e8pxsJc61qlF6EEzt7HMJTJMOgZYbDbrWH2-0X0UtJRpGpZqpcuvw7o5VK_9xKG/pub?gid=1548810665&single=true&output=csv';
+
+    Papa.parse(urlCSV, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const data = results.data;
+        const container = document.getElementById("testimonios");
+        container.innerHTML = '';
+
         data.forEach(t => {
-          if(t["¿Qué opinas de la atención recibida?"]) {
+          if (t["¿Qué opinas de la atención recibida?"]) {
             const div = document.createElement("blockquote");
             div.innerHTML = `
               <p>"${t["¿Qué opinas de la atención recibida?"].trim()}"</p>
               <footer>- ${t["Nombre (opcional)"]?.trim() || "Anónimo"}</footer>
             `;
-            cont.appendChild(div);
-          }
-        });
-      })
-      .catch(err => {
-        document.getElementById("testimonios").innerText = "Error al cargar testimonios.";
-        console.error("Fetch error:", err);
-      });
-  </script>
-</body>
-</html>
